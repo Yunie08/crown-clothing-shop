@@ -4,6 +4,7 @@ import {
   signInWithRedirect,
   signInWithPopup,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 // Your web app's Firebase configuration
@@ -31,8 +32,9 @@ export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 // Firestore database instanciation
 export const db = getFirestore();
 
-// Get user data from login and store it in database
-export const createUserDocumentFromAuth = async (userAuth) => {
+// CREATE USER FROM GOOGLE AUTH
+export const createUserDocumentFromAuth = async (userAuth, additionalInfo) => {
+  if (!userAuth) return;
   // 1) we check if there is an existing document reference with this uid
   // if there is no reference with this id, Firebase will still create a new ref for us to store our new userdata
   // doc(database, collection, unique id) => retrieve documents inside firestore db, not the data!
@@ -54,6 +56,8 @@ export const createUserDocumentFromAuth = async (userAuth) => {
         displayName,
         email,
         createdAt,
+        // additional info to overwrite displayName === null when we do not authenticate with Google (we set the displayName 'manually')
+        ...additionalInfo,
       });
     } catch (error) {
       console.log("error creating the user", error.message);
@@ -62,4 +66,11 @@ export const createUserDocumentFromAuth = async (userAuth) => {
 
   // 3.2 if user data exists
   return userDocRef;
+};
+
+// CREATE USER WITH EMAIL & PASSWORD
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+
+  return await createUserWithEmailAndPassword(auth, email, password);
 };
