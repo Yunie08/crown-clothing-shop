@@ -17,13 +17,13 @@ const defaultFormFields = {
   confirmPassword: "",
 };
 
-const SignUphtmlForm = () => {
+const SignUpForm = () => {
   const [error, setError] = useState(null);
-  const [htmlFormFields, sethtmlFormFields] = useState(defaultFormFields);
-  const { displayName, email, password, confirmPassword } = htmlFormFields;
+  const [FormFields, setFormFields] = useState(defaultFormFields);
+  const { displayName, email, password, confirmPassword } = FormFields;
 
   const resetFormFields = () => {
-    sethtmlFormFields(defaultFormFields);
+    setFormFields(defaultFormFields);
     setError(null);
   };
 
@@ -63,7 +63,7 @@ const SignUphtmlForm = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    sethtmlFormFields({ ...htmlFormFields, [name]: value });
+    setFormFields({ ...FormFields, [name]: value });
   };
 
   return (
@@ -87,7 +87,7 @@ const SignUphtmlForm = () => {
           label="Email"
           id="email-signup"
           inputOptions={{
-            type: "text",
+            type: "email",
             required: true,
             onChange: handleChange,
             name: "email",
@@ -98,7 +98,7 @@ const SignUphtmlForm = () => {
           label="Password"
           id="password-signup"
           inputOptions={{
-            type: "text",
+            type: "password",
             required: true,
             onChange: handleChange,
             name: "password",
@@ -109,7 +109,7 @@ const SignUphtmlForm = () => {
           label="Confirm Password"
           id="confirm-password-signup"
           inputOptions={{
-            type: "text",
+            type: "password",
             required: true,
             onChange: handleChange,
             name: "confirmPassword",
@@ -123,4 +123,4 @@ const SignUphtmlForm = () => {
   );
 };
 
-export default SignUphtmlForm;
+export default SignUpForm;
