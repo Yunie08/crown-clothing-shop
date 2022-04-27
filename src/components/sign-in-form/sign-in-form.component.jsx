@@ -1,6 +1,8 @@
 import { useState } from "react";
 import FormInput from "../form-input/form-input.component";
 import Button from "../button/button.component";
+import FormFeedbackMessage from "../form-feedback-message/form-feedback-message.component";
+import RemoveComponent from "../remove-component/remove-component.component";
 
 import {
   signInWithGooglePopup,
@@ -17,21 +19,19 @@ const defaultFormFields = {
 
 const SignInForm = () => {
   const [error, setError] = useState(null);
+  const [feedbackType, setFeedbackType] = useState(null);
   const [FormFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = FormFields;
 
-  const resetFormFields = () => {
-    setFormFields(defaultFormFields);
-    setError(null);
-  };
-
   const signInWithGoogle = async () => {
+    setFeedbackType(null);
     try {
       // user is he only data we are interested in here
       const { user } = await signInWithGooglePopup();
       await createUserDocumentFromAuth(user);
     } catch (err) {
       console.log(err);
+      setFeedbackType("error");
     }
   };
 
@@ -42,6 +42,7 @@ const SignInForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setFeedbackType(null);
 
     // Create user ref in firebase
     try {
@@ -51,9 +52,14 @@ const SignInForm = () => {
       );
       console.log(response);
     } catch (err) {
+      setFeedbackType("error");
+      console.log(err);
       switch (err.code) {
         case "auth/wrong-password":
-          setError("Wrong email or password");
+          setError("Invalid email or password");
+          break;
+        case "auth/user-not-found":
+          setError("Invalid email or password");
           break;
         default:
           setError("Oups, something bad happened");
@@ -62,9 +68,9 @@ const SignInForm = () => {
   };
 
   return (
-    <div className="sign-up-container">
-      <h2>Don't have an account ?</h2>
-      <span>Sign up with your email and password</span>
+    <div className="sign-in-container">
+      <h2>Already have an account ?</h2>
+      <span>Sign in with your email and password</span>
 
       <form onSubmit={handleSubmit} onClick={() => setError(null)}>
         <FormInput
@@ -80,7 +86,7 @@ const SignInForm = () => {
         />
         <FormInput
           label="Password"
-          id="password-signup"
+          id="password-signin"
           inputOptions={{
             type: "password",
             required: true,
@@ -89,7 +95,6 @@ const SignInForm = () => {
             value: password,
           }}
         />
-        {error && <p>{error}</p>}
         <div className="buttons-container">
           <Button type="submit">Sign In</Button>
           <Button
@@ -100,6 +105,13 @@ const SignInForm = () => {
             Google Sign In
           </Button>
         </div>
+        {feedbackType && (
+          <RemoveComponent delay={10000}>
+            <FormFeedbackMessage feedbackType={feedbackType}>
+              {feedbackType === "error" ? error : "User successfully logged in"}
+            </FormFeedbackMessage>
+          </RemoveComponent>
+        )}
       </form>
     </div>
   );

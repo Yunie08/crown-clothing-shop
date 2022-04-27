@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import FormInput from "../form-input/form-input.component";
 import Button from "../button/button.component";
+import FormFeedbackMessage from "../form-feedback-message/form-feedback-message.component";
+import RemoveComponent from "../remove-component/remove-component.component";
 
 import {
   createAuthUserWithEmailAndPassword,
@@ -19,6 +21,7 @@ const defaultFormFields = {
 
 const SignUpForm = () => {
   const [error, setError] = useState(null);
+  const [feedbackType, setFeedbackType] = useState(null);
   const [FormFields, setFormFields] = useState(defaultFormFields);
   const { displayName, email, password, confirmPassword } = FormFields;
 
@@ -29,6 +32,7 @@ const SignUpForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setFeedbackType(null);
 
     // Check passwords match
     if (password !== confirmPassword) {
@@ -45,9 +49,9 @@ const SignUpForm = () => {
 
       // Create user data in firebase database
       await createUserDocumentFromAuth(user, { displayName });
+      setFeedbackType("success");
       resetFormFields();
     } catch (err) {
-      console.log(err.code);
       switch (err.code) {
         case "auth/email-already-in-use":
           setError("This user already exists");
@@ -58,6 +62,7 @@ const SignUpForm = () => {
         default:
           setError("Oups, something bad happened");
       }
+      setFeedbackType("error");
     }
   };
 
@@ -70,8 +75,8 @@ const SignUpForm = () => {
     <div className="sign-up-container">
       <h2>Don't have an account ?</h2>
       <span>Sign up with your email and password</span>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit} onClick={() => setError(null)}>
+
+      <form onSubmit={handleSubmit} onClick={() => setFeedbackType(null)}>
         <FormInput
           label="Display Name"
           id="display-name-signup"
@@ -118,6 +123,15 @@ const SignUpForm = () => {
         />
 
         <Button type="submit">Sign Up</Button>
+        {feedbackType && (
+          <RemoveComponent delay={10000}>
+            <FormFeedbackMessage feedbackType={feedbackType}>
+              {feedbackType === "error"
+                ? error
+                : "User account successfully created"}
+            </FormFeedbackMessage>
+          </RemoveComponent>
+        )}
       </form>
     </div>
   );
