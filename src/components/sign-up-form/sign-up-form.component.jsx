@@ -1,15 +1,18 @@
 import { useState } from "react";
 
+// Components
 import FormInput from "../form-input/form-input.component";
 import Button from "../button/button.component";
 import FormFeedbackMessage from "../form-feedback-message/form-feedback-message.component";
 import RemoveComponent from "../remove-component/remove-component.component";
 
+// Utilities
 import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
 } from "../../utils/firebase/firebase.utils";
 
+//Styles
 import "./sign-up-form.styles.scss";
 
 const defaultFormFields = {
@@ -46,7 +49,6 @@ const SignUpForm = () => {
         email,
         password
       );
-
       // Create user data in firebase database
       await createUserDocumentFromAuth(user, { displayName });
       setFeedbackType("success");

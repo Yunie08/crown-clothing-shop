@@ -1,3 +1,4 @@
+import { async } from "@firebase/util";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -6,6 +7,8 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 // Your web app's Firebase configuration
@@ -82,3 +85,12 @@ export const signInAuthUserWithEmailAndPassword = async (email, password) => {
 
   return await signInWithEmailAndPassword(auth, email, password);
 };
+
+// LOGOUT
+export const signOutUser = async () => signOut(auth);
+
+// AUTHENTICATION LISTENER
+// Trigger a callback whenever the auth state changes
+// As this is an open listener (always listening) we need to stop it whenever needed to avoid any memory leak
+export const onAuthStateChangedListener = (callback) =>
+  onAuthStateChanged(auth, callback);

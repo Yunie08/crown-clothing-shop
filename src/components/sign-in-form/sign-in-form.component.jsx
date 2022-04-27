@@ -1,15 +1,19 @@
 import { useState } from "react";
+
+// Components
 import FormInput from "../form-input/form-input.component";
 import Button from "../button/button.component";
 import FormFeedbackMessage from "../form-feedback-message/form-feedback-message.component";
 import RemoveComponent from "../remove-component/remove-component.component";
 
+// Utilities
 import {
   signInWithGooglePopup,
   createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
 } from "../../utils/firebase/firebase.utils";
 
+// Style
 import "./sign-in-form.styles.scss";
 
 const defaultFormFields = {
@@ -22,6 +26,11 @@ const SignInForm = () => {
   const [feedbackType, setFeedbackType] = useState(null);
   const [FormFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = FormFields;
+
+  const resetFormFields = () => {
+    setFormFields(defaultFormFields);
+    setError(null);
+  };
 
   const signInWithGoogle = async () => {
     setFeedbackType(null);
@@ -46,14 +55,11 @@ const SignInForm = () => {
 
     // Create user ref in firebase
     try {
-      const response = await signInAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
-      console.log(response);
+      await signInAuthUserWithEmailAndPassword(email, password);
+      setFeedbackType("success");
+      resetFormFields();
     } catch (err) {
       setFeedbackType("error");
-      console.log(err);
       switch (err.code) {
         case "auth/wrong-password":
           setError("Invalid email or password");
