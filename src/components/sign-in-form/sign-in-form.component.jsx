@@ -9,7 +9,6 @@ import RemoveComponent from "../remove-component/remove-component.component";
 // Utilities
 import {
   signInWithGooglePopup,
-  createUserDocumentFromAuth,
   signInAuthUserWithEmailAndPassword,
 } from "../../utils/firebase/firebase.utils";
 
@@ -35,9 +34,7 @@ const SignInForm = () => {
   const signInWithGoogle = async () => {
     setFeedbackType(null);
     try {
-      // user is he only data we are interested in here
-      const { user } = await signInWithGooglePopup();
-      await createUserDocumentFromAuth(user);
+      await signInWithGooglePopup();
     } catch (err) {
       console.log(err);
       setFeedbackType("error");
