@@ -9,12 +9,12 @@ import "./cart-icon.styles.scss";
 import React from "react";
 
 const CartIcon = () => {
-  const { toggleIsCartOpen } = useContext(CartContext);
+  const { toggleIsCartOpen, cartCount } = useContext(CartContext);
 
   return (
     <div className="cart-icon-container" onClick={toggleIsCartOpen}>
       <ShoppingIcon className="cart-icon" />
-      <span className="item-count">10</span>
+      <span className="item-count">{cartCount}</span>
     </div>
   );
 };
