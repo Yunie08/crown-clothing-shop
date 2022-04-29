@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -10,7 +9,19 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  // Populate db
+  collection,
+  writeBatch,
+  // Get shop data from db
+  query,
+  getDocs,
+} from "firebase/firestore";
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBzjo6FMWDYJK-4H4god0IjnTSzw-K5B14",
@@ -35,6 +46,28 @@ export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 
 // Firestore database instanciation
 export const db = getFirestore();
+
+// EXPORT SHOP DATA TO DATABASE
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  // Create collection reference
+  const collectionRef = collection(db, collectionKey);
+
+  // Creating batch of actions
+  const batch = writeBatch(db);
+  // For each object ('hats', 'jackets', 'mens', 'womens', 'snickers')
+  objectsToAdd.forEach((object) => {
+    // Create doc reference
+    const docRef = doc(collectionRef, object.title.toLowerCase());
+    // Set value
+    batch.set(docRef, object);
+  });
+
+  await batch.commit();
+  console.log("done");
+};
 
 // CREATE USER FROM GOOGLE AUTH
 export const createUserDocumentFromAuth = async (userAuth, additionalInfo) => {
@@ -94,3 +127,18 @@ export const signOutUser = async () => signOut(auth);
 // As this is an open listener (always listening) we need to stop it whenever needed to avoid any memory leak
 export const onAuthStateChangedListener = (callback) =>
   onAuthStateChanged(auth, callback);
+
+// GET SHOP DATA FROM DB
+export const getCategoriesAndDocuments = async () => {
+  const collectionRef = collection(db, "categories");
+  const q = query(collectionRef);
+
+  const querySnapshot = await getDocs(q);
+  const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+    const { title, items } = docSnapshot.data();
+    acc[title.toLowerCase()] = items;
+    return acc;
+  }, {});
+
+  return categoryMap;
+};
