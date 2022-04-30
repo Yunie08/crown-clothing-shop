@@ -1,20 +1,16 @@
-import "./form-input.styles.scss";
+import { FormInputLabel, Input, Group } from "./form-input.styles.jsx";
 
 const FormInput = ({ label, id, inputOptions }) => {
+  // note: shrink styling when the user has started filling the input
   return (
-    <div className="group">
-      <input id={id} {...inputOptions} className="form-input" />
+    <Group>
+      <Input id={id} {...inputOptions} />
       {label && (
-        <label
-          htmlFor={id}
-          className={`${
-            inputOptions.value.length && "shrink"
-          } form-input-label`}
-        >
+        <FormInputLabel htmlFor={id} shrink={inputOptions.value.length}>
           {label}
-        </label>
+        </FormInputLabel>
       )}
-    </div>
+    </Group>
   );
 };
 

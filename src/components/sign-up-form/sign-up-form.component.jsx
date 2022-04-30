@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Components
 import FormInput from "../form-input/form-input.component";
@@ -13,7 +14,7 @@ import {
 } from "../../utils/firebase/firebase.utils";
 
 //Styles
-import "./sign-up-form.styles.scss";
+import { SignUpContainer } from "./sign-up-form.styles.jsx";
 
 const defaultFormFields = {
   displayName: "",
@@ -27,6 +28,7 @@ const SignUpForm = () => {
   const [feedbackType, setFeedbackType] = useState(null);
   const [FormFields, setFormFields] = useState(defaultFormFields);
   const { displayName, email, password, confirmPassword } = FormFields;
+  const navigate = useNavigate();
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
@@ -51,8 +53,9 @@ const SignUpForm = () => {
       );
       // Create user data in firebase database
       await createUserDocumentFromAuth(user, { displayName });
-      setFeedbackType("success");
       resetFormFields();
+      setFeedbackType("success");
+      setTimeout(navigate("/"), 3000);
     } catch (err) {
       switch (err.code) {
         case "auth/email-already-in-use":
@@ -74,7 +77,7 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="sign-up-container">
+    <SignUpContainer>
       <h2>Don't have an account ?</h2>
       <span>Sign up with your email and password</span>
 
@@ -125,17 +128,17 @@ const SignUpForm = () => {
         />
 
         <Button type="submit">Sign Up</Button>
-        {feedbackType && (
-          <RemoveComponent delay={10000}>
-            <FormFeedbackMessage feedbackType={feedbackType}>
-              {feedbackType === "error"
-                ? error
-                : "User account successfully created"}
-            </FormFeedbackMessage>
-          </RemoveComponent>
-        )}
       </form>
-    </div>
+      {feedbackType && (
+        <RemoveComponent delay={10000}>
+          <FormFeedbackMessage feedbackType={feedbackType}>
+            {feedbackType === "error"
+              ? error
+              : "User account successfully created"}
+          </FormFeedbackMessage>
+        </RemoveComponent>
+      )}
+    </SignUpContainer>
   );
 };
 

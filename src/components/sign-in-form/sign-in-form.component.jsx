@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Components
 import FormInput from "../form-input/form-input.component";
-import Button from "../button/button.component";
+import Button, { BUTTON_TYPES_CLASSES } from "../button/button.component";
 import FormFeedbackMessage from "../form-feedback-message/form-feedback-message.component";
 import RemoveComponent from "../remove-component/remove-component.component";
 
@@ -13,7 +14,7 @@ import {
 } from "../../utils/firebase/firebase.utils";
 
 // Style
-import "./sign-in-form.styles.scss";
+import { SignInContainer, ButtonsContainer } from "./sign-in-form.styles.jsx";
 
 const defaultFormFields = {
   email: "",
@@ -25,6 +26,7 @@ const SignInForm = () => {
   const [feedbackType, setFeedbackType] = useState(null);
   const [FormFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = FormFields;
+  const navigate = useNavigate();
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
@@ -35,6 +37,7 @@ const SignInForm = () => {
     setFeedbackType(null);
     try {
       await signInWithGooglePopup();
+      setTimeout(navigate("/"), 2000);
     } catch (err) {
       console.log(err);
       setFeedbackType("error");
@@ -55,6 +58,7 @@ const SignInForm = () => {
       await signInAuthUserWithEmailAndPassword(email, password);
       setFeedbackType("success");
       resetFormFields();
+      setTimeout(navigate("/"), 2000);
     } catch (err) {
       setFeedbackType("error");
       switch (err.code) {
@@ -71,7 +75,7 @@ const SignInForm = () => {
   };
 
   return (
-    <div className="sign-in-container">
+    <SignInContainer>
       <h2>Already have an account ?</h2>
       <span>Sign in with your email and password</span>
 
@@ -98,16 +102,16 @@ const SignInForm = () => {
             value: password,
           }}
         />
-        <div className="buttons-container">
+        <ButtonsContainer>
           <Button type="submit">Sign In</Button>
           <Button
             type="button"
             onClick={() => signInWithGoogle()}
-            buttonType="google"
+            buttonType={BUTTON_TYPES_CLASSES.google}
           >
             Google Sign In
           </Button>
-        </div>
+        </ButtonsContainer>
         {feedbackType && (
           <RemoveComponent delay={10000}>
             <FormFeedbackMessage feedbackType={feedbackType}>
@@ -116,7 +120,7 @@ const SignInForm = () => {
           </RemoveComponent>
         )}
       </form>
-    </div>
+    </SignInContainer>
   );
 };
 
