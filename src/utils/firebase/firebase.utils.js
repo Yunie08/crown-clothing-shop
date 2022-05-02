@@ -20,6 +20,7 @@ import {
   // Get shop data from db
   query,
   getDocs,
+  DocumentSnapshot,
 } from "firebase/firestore";
 
 // Your web app's Firebase configuration
@@ -134,11 +135,35 @@ export const getCategoriesAndDocuments = async () => {
   const q = query(collectionRef);
 
   const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map((docSnapshot) => docSnapshot.data());
+
+  /*
+  The formatting part is migrated in a selector
   const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
     const { title, items } = docSnapshot.data();
     acc[title.toLowerCase()] = items;
     return acc;
   }, {});
-
+  
+  output ===> map
+  {
+    hats : {
+      title: 'Hats',
+      items: [
+        {},
+        {},
+      ],
+    },
+    sneakers : {
+      title: 'Sneakers',
+        items: [
+        {},
+        {},
+      ],
+    }
+    ...
+  }
+  
   return categoryMap;
+  */
 };

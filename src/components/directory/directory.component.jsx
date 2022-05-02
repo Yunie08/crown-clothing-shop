@@ -1,6 +1,7 @@
 import DirectoryItem from "../directory-item/directory-item.component";
 import { DirectoryContainer } from "./directory.styles.jsx";
 
+// We keep the categories here rather than in Firebase because the frontend routes have nothing to do in the backend
 const categories = [
   {
     id: 1,

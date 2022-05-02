@@ -61,7 +61,6 @@ export const CART_ACTION_TYPES = {
 // Any logic should be set in a previous 'middleware'
 const cartReducer = (state, action) => {
   const { type, payload } = action;
-  console.log(payload);
   switch (type) {
     case CART_ACTION_TYPES.SET_IS_CART_OPEN:
       return {
