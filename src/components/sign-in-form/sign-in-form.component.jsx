@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 // Components
 import FormInput from "../form-input/form-input.component";
@@ -7,11 +8,11 @@ import Button, { BUTTON_TYPES_CLASSES } from "../button/button.component";
 import FormFeedbackMessage from "../form-feedback-message/form-feedback-message.component";
 import RemoveComponent from "../remove-component/remove-component.component";
 
-// Utilities
+// Redux
 import {
-  signInWithGooglePopup,
-  signInAuthUserWithEmailAndPassword,
-} from "../../utils/firebase/firebase.utils";
+  googleSignInStart,
+  emailSignInStart,
+} from "../../store/user/user.action";
 
 // Style
 import { SignInContainer, ButtonsContainer } from "./sign-in-form.styles.jsx";
@@ -22,6 +23,7 @@ const defaultFormFields = {
 };
 
 const SignInForm = () => {
+  const dispatch = useDispatch();
   const [error, setError] = useState(null);
   const [feedbackType, setFeedbackType] = useState(null);
   const [FormFields, setFormFields] = useState(defaultFormFields);
@@ -34,14 +36,7 @@ const SignInForm = () => {
   };
 
   const signInWithGoogle = async () => {
-    setFeedbackType(null);
-    try {
-      await signInWithGooglePopup();
-      setTimeout(navigate("/"), 2000);
-    } catch (err) {
-      console.log(err);
-      setFeedbackType("error");
-    }
+    dispatch(googleSignInStart());
   };
 
   const handleChange = (event) => {
@@ -50,28 +45,28 @@ const SignInForm = () => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    setFeedbackType(null);
+    dispatch(emailSignInStart(email, password));
+    // event.preventDefault();
+    // setFeedbackType(null);
 
-    // Create user ref in firebase
-    try {
-      await signInAuthUserWithEmailAndPassword(email, password);
-      setFeedbackType("success");
-      resetFormFields();
-      setTimeout(navigate("/"), 2000);
-    } catch (err) {
-      setFeedbackType("error");
-      switch (err.code) {
-        case "auth/wrong-password":
-          setError("Invalid email or password");
-          break;
-        case "auth/user-not-found":
-          setError("Invalid email or password");
-          break;
-        default:
-          setError("Oups, something bad happened");
-      }
-    }
+    // // Create user ref in firebase
+    // try {
+    //   setFeedbackType("success");
+    //   resetFormFields();
+    //   setTimeout(navigate("/"), 2000);
+    // } catch (err) {
+    //   setFeedbackType("error");
+    //   switch (err.code) {
+    //     case "auth/wrong-password":
+    //       setError("Invalid email or password");
+    //       break;
+    //     case "auth/user-not-found":
+    //       setError("Invalid email or password");
+    //       break;
+    //     default:
+    //       setError("Oups, something bad happened");
+    //   }
+    // }
   };
 
   return (

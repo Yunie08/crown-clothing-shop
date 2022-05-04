@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 // Components
 import FormInput from "../form-input/form-input.component";
@@ -8,10 +9,7 @@ import FormFeedbackMessage from "../form-feedback-message/form-feedback-message.
 import RemoveComponent from "../remove-component/remove-component.component";
 
 // Utilities
-import {
-  createAuthUserWithEmailAndPassword,
-  createUserDocumentFromAuth,
-} from "../../utils/firebase/firebase.utils";
+import { signUpStart } from "../../store/user/user.action";
 
 //Styles
 import { SignUpContainer } from "./sign-up-form.styles.jsx";
@@ -24,6 +22,7 @@ const defaultFormFields = {
 };
 
 const SignUpForm = () => {
+  const dispatch = useDispatch();
   const [error, setError] = useState(null);
   const [feedbackType, setFeedbackType] = useState(null);
   const [FormFields, setFormFields] = useState(defaultFormFields);
@@ -45,17 +44,11 @@ const SignUpForm = () => {
       return;
     }
 
-    // Create user ref in firebase
     try {
-      const { user } = await createAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
-      // Create user data in firebase database
-      await createUserDocumentFromAuth(user, { displayName });
+      dispatch(signUpStart(email, password, displayName));
       resetFormFields();
-      setFeedbackType("success");
-      setTimeout(navigate("/"), 3000);
+      // setFeedbackType("success");
+      // setTimeout(navigate("/"), 3000);
     } catch (err) {
       switch (err.code) {
         case "auth/email-already-in-use":

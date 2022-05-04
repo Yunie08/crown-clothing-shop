@@ -103,7 +103,7 @@ export const createUserDocumentFromAuth = async (userAuth, additionalInfo) => {
   }
 
   // 3.2 if user data exists
-  return userDocRef;
+  return userSnapshot;
 };
 
 // CREATE USER WITH EMAIL & PASSWORD
@@ -126,8 +126,8 @@ export const signOutUser = async () => signOut(auth);
 // AUTHENTICATION LISTENER
 // Trigger a callback whenever the auth state changes
 // As this is an open listener (always listening) we need to stop it whenever needed to avoid any memory leak
-export const onAuthStateChangedListener = (callback) =>
-  onAuthStateChanged(auth, callback);
+// export const onAuthStateChangedListener = (callback) =>
+//   onAuthStateChanged(auth, callback);
 
 // GET SHOP DATA FROM DB
 export const getCategoriesAndDocuments = async () => {
@@ -166,4 +166,20 @@ export const getCategoriesAndDocuments = async () => {
   
   return categoryMap;
   */
+};
+
+// Replaces the auth listener
+// we convert from an observable listener into a promise based function call
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      // to avoid any memory leak, we unsubscribe as soon as we get a value (in the callback)
+      (userAuth) => {
+        unsubscribe();
+        resolve(userAuth);
+      },
+      reject
+    );
+  });
 };
